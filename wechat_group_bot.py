@@ -9,7 +9,8 @@ import datetime
 import thread
 #import tinydb
 from localuser import LocalUserTool
-from store import push_message
+from store import push_message,save_file
+import uuid
 
 '''
 #  重构
@@ -84,7 +85,8 @@ def forward_message(msg,src_group,target_groups):
         username = msg["ActualUserName"] # 发言用户id 群id:FromUserName
         user = itchat.search_friends(userName=username)
         '''
-        logger.debug(msg) # log
+        logger.debug("forward_message begin") # log
+        logger.debug(("forward message : ",msg)) # log
         # 跨群@ , 至于私聊 可以截图发微信号
         #把用户都存下,多给msg一个属性 at_id
         # logger.info((now, group._group_name, msg['ActualNickName'], msg["Text"]))
@@ -94,10 +96,24 @@ def forward_message(msg,src_group,target_groups):
         message2push["content"] = msg["Text"]
         message2push["group_user_name"] = msg["ActualNickName"]
         try:
+            # 头像
+            img_id = uuid.uuid4().get_hex()[:10]
+            #user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id))
+            img_data = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id)#.getvalue()#前头是str  #,picDir="/tmp/wechat_user/{}".format(img_id))
+            logger.debug(("img_data:",img_data))
+            img_url = save_file(img_id+".png",buffer(img_data)) # 直接是url
+            #logger.debug(("img_url:",dir(img_url),img_url.url))
+        except Exception as e:
+            logger.debug("can not get user head img")
+            logger.debug(str(e))
+
+        try:
+            logger.debug("ready to push message to cloud")
             push_message(message2push)
-        except:
+        #except e:
+        except Exception as e:
+            logger.debug(str(e))
             # 这样不好 ，有空优化
-            pass
 
         actual_user_name = msg["ActualNickName"]
         localuser_tool = LocalUserTool()
@@ -126,8 +142,6 @@ def forward_message(msg,src_group,target_groups):
                 # 推送到每个群
                 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 logger.info((now, group._group_name, msg['ActualNickName'], msg["Text"]))
-
-                push_message()
                 #if group._group_id:
                 message = '{}-at_id:{} 发言 ：\n{}'.format(msg['ActualNickName'],msg['at_id'],msg['Text'])
                 itchat.send(message,group._group_id) # 采用异步
@@ -198,9 +212,11 @@ def main():
     def simple_reply(msg):
         #设置为nolocal
         global groups
-        print("simple_reply begin msg")
+        print("group message input") #itchat 1.2.18 每次信息确实来这里了
         for group in groups:
-            if msg['FromUserName'] == group._group_id:
+            logger.debug(("local_group",group._group_id,group._group_name))
+            logger.debug("meg from group:{}".format(msg['FromUserName']))
+            if msg['FromUserName'] == group._group_id: # 一条消息只能匹配一次
                 src_group = group
                 target_groups = get_target_groups(src_group, tuple(groups))
                 # 筛选出已激活的
