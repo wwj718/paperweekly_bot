@@ -28,12 +28,13 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 [ ]  将用户头像upload到云端，同时做好本地缓存，避免每个用户都存储(使用md5) 
     [ ] 在本地存下hash和url （有一次img data网络请求）
     [ ] 单次优化，存下3元组（data_hash,userName,url） 只要有任意一个就不做网络请求
+[ ] 使用py.test写测试：py.test test_localuser.py (vim  !py.test -s %)
 
 # 使用
 ```
 # git clone 
 pip install -r requirements.txt
-set -x  LEANCLOUD_APP_ID xxx
+set -x  LEANCLOUD_APP_ID xxx  # or export LEANCLOUD_APP_ID=xxx
 set -x LEANCLOUD_APP_KEY xxx
 python wechat_group_bot.py
 ```

@@ -37,10 +37,7 @@ def push_message(message):
     message_model.save()
 
 def save_file(filename,data):
-    data_hash = hashlib.md5(data).hexdigest() # 一致 26771cad667b860261090a8d52f3299c wwj
-    # 去本地缓存系统里找
-    print(data_hash)
-    # 如果data_hash在本地有，就不做网络请求，直接拿到url
+    #data_hash = hashlib.md5(data).hexdigest() # 一致 26771cad667b860261090a8d52f3299c wwj 缓存在user_img_cache里做
     #https://leancloud.cn/docs/leanstorage_guide-python.html#从数据流构建文件
     cloud_file = leancloud.File(filename, data)
     cloud_file.save()

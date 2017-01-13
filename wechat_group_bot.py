@@ -98,10 +98,12 @@ def forward_message(msg,src_group,target_groups):
         try:
             # 头像
             img_id = uuid.uuid4().get_hex()[:10]
-            #user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id))
-            img_data = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id)#.getvalue()#前头是str  #,picDir="/tmp/wechat_user/{}".format(img_id))
+            #user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id)) #存储到本地
+            # todo:第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"] 是否被记录在本地数据库,免去向微信请求
+            img_data = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id)#.getvalue()#前头是str
             logger.debug(("img_data:",img_data))
             img_url = save_file(img_id+".png",buffer(img_data)) # 直接是url
+            message2push["user_img"] = img_url
             #logger.debug(("img_url:",dir(img_url),img_url.url))
         except Exception as e:
             logger.debug("can not get user head img")
