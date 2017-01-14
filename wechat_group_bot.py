@@ -8,9 +8,10 @@ import re
 import datetime
 import thread
 #import tinydb
-from localuser import LocalUserTool
+from localuser import LocalUserTool,UserImgCache
 from store import push_message,save_file
 import uuid
+import hashlib
 
 '''
 #  重构
@@ -30,13 +31,14 @@ from itchat.content import TEXT, PICTURE, RECORDING, ATTACHMENT, VIDEO, SHARING 
 
 #########
 #log
+# 使用info，debug 太多itchat的信息了
 import logging
 LOG_FILE = "/tmp/wechat_3group.log"
-logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
 logger = logging.getLogger(__name__)
 handler = logging.FileHandler(LOG_FILE)
 logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 #########
 
@@ -81,12 +83,12 @@ def forward_message(msg,src_group,target_groups):
         '''
         print(itchat.get_friends())
         # 消息入口
-        logger.debug(msg)
+        logger.info(msg)
         username = msg["ActualUserName"] # 发言用户id 群id:FromUserName
         user = itchat.search_friends(userName=username)
         '''
-        logger.debug("forward_message begin") # log
-        logger.debug(("forward message : ",msg)) # log
+        logger.info("forward_message begin") # log
+        logger.info(("forward message : ",msg)) # log
         # 跨群@ , 至于私聊 可以截图发微信号
         #把用户都存下,多给msg一个属性 at_id
         # logger.info((now, group._group_name, msg['ActualNickName'], msg["Text"]))
@@ -97,27 +99,42 @@ def forward_message(msg,src_group,target_groups):
         message2push["group_user_name"] = msg["ActualNickName"]
         try:
             # 头像
-            img_id = uuid.uuid4().get_hex()[:10]
             #user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id)) #存储到本地
             # todo:第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"] 是否被记录在本地数据库,免去向微信请求
-            img_data = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id)#.getvalue()#前头是str
-            logger.debug(("img_data:",img_data))
-            img_url = save_file(img_id+".png",buffer(img_data)) # 直接是url
-            message2push["user_img"] = img_url
-            #logger.debug(("img_url:",dir(img_url),img_url.url))
+            user_img = UserImgCache()
+            group_user_id = msg["ActualUserName"]
+            url_get_with_user_id = user_img.get_user_img_with_user_id(group_user_id) #第一层缓存
+            if url_get_with_user_id:
+                message2push["user_img"] = url_get_with_user_id
+                logger.info(("url_get_with_user_id: "+message2push["user_img"]))
+            else:
+                #重新登录user id 变了，但是img md5还有效
+                img_data = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id)#.getvalue()#前头是str
+                img_md5= hashlib.md5(buffer(img_data)).hexdigest()
+                url_get_with_img_md5 = user_img.get_user_img_with_img_md5(img_md5)
+                if url_get_with_img_md5:
+                    message2push["user_img"] = url_get_with_img_md5
+                    logger.info(("url_get_with_img_md5: "+message2push["user_img"]))
+                else:
+                    # 如果两级缓存都没有命中
+                    url_with_uploading_img = user_img.set_user_img(group_user_id,buffer(img_data))
+                    message2push["user_img"] = url_with_uploading_img
+                    logger.info(("url_with_uploading_img: "+message2push["user_img"]))
         except Exception as e:
-            logger.debug("can not get user head img")
-            logger.debug(str(e))
+            logger.info("can not get user head img")
+            logger.info(str(e))
 
         try:
-            logger.debug("ready to push message to cloud")
+            logger.info("ready to push message to cloud")
             push_message(message2push)
         #except e:
         except Exception as e:
-            logger.debug(str(e))
+            logger.info("can not push message")
+            logger.info(str(e))
             # 这样不好 ，有空优化
 
         actual_user_name = msg["ActualNickName"]
+        # for at id
         localuser_tool = LocalUserTool()
         at_id = localuser_tool.get_at_id(actual_user_name)
         if not at_id:
@@ -148,10 +165,12 @@ def forward_message(msg,src_group,target_groups):
                 message = '{}-at_id:{} 发言 ：\n{}'.format(msg['ActualNickName'],msg['at_id'],msg['Text'])
                 itchat.send(message,group._group_id) # 采用异步
     if msg["Type"] == 'Picture':
+            # todo：上传到云端
             msg['Text'](msg['FileName'])  #下载
             for group in target_groups:
                 itchat.send_image(msg['FileName'], group._group_id)
     if msg['Type'] == 'Sharing':
+        # 同样作为普通消息存入云端
         share_message = "@{}分享\n{} {}".format(
             msg['ActualNickName'], msg["Url"].replace("amp;", ""), msg["Text"])
         for group in target_groups:
@@ -216,8 +235,8 @@ def main():
         global groups
         print("group message input") #itchat 1.2.18 每次信息确实来这里了
         for group in groups:
-            logger.debug(("local_group",group._group_id,group._group_name))
-            logger.debug("meg from group:{}".format(msg['FromUserName']))
+            logger.info(("local_group",group._group_id,group._group_name))
+            logger.info("meg from group:{}".format(msg['FromUserName']))
             if msg['FromUserName'] == group._group_id: # 一条消息只能匹配一次
                 src_group = group
                 target_groups = get_target_groups(src_group, tuple(groups))
