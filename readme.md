@@ -31,6 +31,13 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 - [x] 使用py.test写测试：py.test test_localuser.py (vim  !py.test -s %)
 - [ ] 构建本地存储（peewee），和云端存储继承自同一个类，通过设置文件设置
 - [ ] 使用bokeh可视化数据 
+  -  [ ] 动态查询数据库(使用export_csv)
+  -  [ ] 可视化
+  -  [ ] 分词/词云
+- [ ] 从旧版本的log中提取message，存入本地数据库，方便pandas使用(使用grep)
+    - [x] 测试`head -n 200 wechat_3group.log |grep "INFO:__main__:('201-"`
+    - [x] 提取所有信息`grep  "INFO:__main__:('201-" wechat_3group.log > grep_wechat_3group.log` (tmux)
+    - [x] "\u54c8\u54c8".decode("unicode_escape")
 
 # 使用
 ```
