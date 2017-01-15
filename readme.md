@@ -21,14 +21,16 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 
 # todo
 
-[ ]  模块化，打包发布
-[ ]  文档
-[x]  增加用户头像 
-[x]  升级itchat到1.2.18
-[ ]  将用户头像upload到云端，同时做好本地缓存，避免每个用户都存储(使用md5) 
-    [ ] 在本地存下hash和url （有一次img data网络请求）
-    [ ] 单次优化，存下3元组（data_hash,userName,url） 只要有任意一个就不做网络请求
-[ ] 使用py.test写测试：py.test test_localuser.py (vim  !py.test -s %)
+- [ ]  模块化，打包发布
+- [ ]  文档
+- [x]  增加用户头像 
+- [x]  升级itchat到1.2.18
+- [x]  将用户头像upload到云端，同时做好本地缓存，避免每个用户都存储(使用md5) 
+    - [x] 在本地存下hash和url （有一次img data网络请求）
+    - [x] 单次优化，存下3元组（data_hash,userName,url） 只要有任意一个就不做网络请求
+- [x] 使用py.test写测试：py.test test_localuser.py (vim  !py.test -s %)
+- [ ] 构建本地存储（peewee），和云端存储继承自同一个类，通过设置文件设置
+- [ ] 使用bokeh可视化数据 
 
 # 使用
 ```
