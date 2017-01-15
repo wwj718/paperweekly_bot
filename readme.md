@@ -38,6 +38,7 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 pip install -r requirements.txt
 set -x  LEANCLOUD_APP_ID xxx  # or export LEANCLOUD_APP_ID=xxx
 set -x LEANCLOUD_APP_KEY xxx
+python db_store # 创建本地数据库（默认是sqlite，也可自行替换为mysql、PostgreSQL
 python wechat_group_bot.py
 ```
 

@@ -6,7 +6,7 @@
 from tinydb import TinyDB, where,Query
 import time
 import hashlib
-from store import push_message,save_file
+from leancloud_store import push_message,save_file
 import uuid
 
 class LocalUserTool(object):

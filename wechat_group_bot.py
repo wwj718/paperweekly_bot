@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 from __future__ import unicode_literals
-import threading
 import time
 import random
 import re
@@ -9,8 +8,8 @@ import datetime
 import thread
 #import tinydb
 from localuser import LocalUserTool,UserImgCache
-from store import push_message,save_file
-import uuid
+from leancloud_store import push_message
+import db_store
 import hashlib
 
 '''
@@ -27,7 +26,7 @@ import hashlib
 
 # itchat for wechat
 import itchat  # 另一个微信库：https://github.com/littlecodersh/ItChat
-from itchat.content import TEXT, PICTURE, RECORDING, ATTACHMENT, VIDEO, SHARING # RECORDING 语音
+from itchat.content import TEXT, PICTURE, SHARING #  ,ATTACHMENT,VIDEO, RECORDING #语音
 
 #########
 #log
@@ -127,6 +126,8 @@ def forward_message(msg,src_group,target_groups):
         try:
             logger.info("ready to push message to cloud")
             push_message(message2push)
+            logger.info("ready to push message to local db(sqlite)")
+            db_store.push_message(message2push)
         #except e:
         except Exception as e:
             logger.info("can not push message")

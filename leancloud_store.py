@@ -3,20 +3,20 @@
 from __future__ import unicode_literals
 import leancloud
 from leancloud import Object
-from leancloud import Query
+#from leancloud import Query
 import os
 import random
-import hashlib
 
 # 设置环境变量
-# set -x  LEANCLOUD_APP_ID xxx
+# set -x  LEANCLOUD_APP_ID xxx | except
+# todo 不必默认执行吧
 APP_ID = os.environ.get("LEANCLOUD_APP_ID")
 APP_KEY  = os.environ.get("LEANCLOUD_APP_KEY")
-
 leancloud.init(APP_ID, APP_KEY)
 
 class MessageModel(Object):
     pass
+
 '''
 messageModel = leancloud.Object.extend('messageModel')
 message_model = messageModel()
@@ -24,8 +24,6 @@ message_model = messageModel()
 message_model.set('init_message', 'go!')
 message_model.save()
 # self.set('content', value)
-
-
 '''
 
 def push_message(message):
