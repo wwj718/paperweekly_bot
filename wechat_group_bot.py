@@ -6,31 +6,13 @@ import random
 import re
 import datetime
 import thread
-#import tinydb
 from localuser import LocalUserTool,UserImgCache
-from leancloud_store import push_message
 import db_store
 import hashlib
-
-'''
-#  重构
-*  3个小组
-*  先完成转发部分
-*  采用心想事成法（sicp）
-    *  send_message 假设存在，发给其他两个群
-    *  两个群订阅即可，类中有on emit方法(on 方法是并行)
-    *  消息本身有身份，如果合适就listen on
-*  基于事件驱动/多线程
-    *  Queue/blinker 线程安全
-'''
-
-# itchat for wechat
-import itchat  # 另一个微信库：https://github.com/littlecodersh/ItChat
+import itchat
 from itchat.content import TEXT, PICTURE, SHARING #  ,ATTACHMENT,VIDEO, RECORDING #语音
 
-#########
-#log
-# 使用info，debug 太多itchat的信息了
+##########log
 import logging
 LOG_FILE = "/tmp/wechat_3group.log"
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
@@ -38,6 +20,12 @@ logger = logging.getLogger(__name__)
 handler = logging.FileHandler(LOG_FILE)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
+
+#######setting
+USE_LEANCLOUD = False #默认不使用消息云存储
+if USE_LEANCLOUD:
+    from leancloud_store import push_message
+
 
 #########
 
@@ -125,7 +113,8 @@ def forward_message(msg,src_group,target_groups):
 
         try:
             logger.info("ready to push message to cloud")
-            push_message(message2push)
+            if USE_LEANCLOUD:
+                push_message(message2push)
             logger.info("ready to push message to local db(sqlite)")
             db_store.push_message(message2push)
         #except e:
