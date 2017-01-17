@@ -19,7 +19,7 @@ todo:
 from peewee import *
 from playhouse.sqlite_ext import SqliteExtDatabase
 import datetime
-#from utils import  get_now_timestamp
+from utils import  get_now_timestamp
 import datetime
 db = SqliteExtDatabase('group_chat_message.db')
 
@@ -39,14 +39,14 @@ class Message(BaseModel):
     group_name = CharField()
     content = CharField()
     group_user_name = CharField()
-    user_img = CharField() #url
-    '''
+    user_img = CharField(null = True) #url 可空
     createdAt = IntegerField(default=get_now_timestamp) #默认自创建(使用函数) , 使用arrow
     updatedAt = IntegerField(default=get_now_timestamp) #命名与leancloud默认的一致,time 使用unix时间戳 使用数字 posixTimestamp
     # 使用默认的世界有更多工具方便管理 pandas/boken默认处理的时间是什么，还是用默认的好，需要处理在用arrow
     '''
-    createdAt = DateTimeField(default=datetime.datetime.now) #注意utc 和local 存储的时候使用utc
+    createdAt = DateTimeField(default=datetime.datetime.now) #注意utc 和local 存储的时候使用utc  使用时间戳似乎更容易
     updatedAt = DateTimeField(default=datetime.datetime.now)
+    '''
 
 def push_message(message):
     # message is dict

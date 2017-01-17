@@ -34,6 +34,7 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
   -  [ ] 动态查询数据库(使用export_csv)
   -  [ ] 可视化
   -  [ ] 分词/词云
+  -  [ ] 使用按钮一次触发所有条件
 - [ ] 从旧版本的log中提取message，存入本地数据库，方便pandas使用(使用grep)
     - [x] 测试`head -n 200 wechat_3group.log |grep "INFO:__main__:('201-"`
     - [x] 提取所有信息`grep  "INFO:__main__:('201-" wechat_3group.log > grep_wechat_3group.log` (tmux)
@@ -62,3 +63,6 @@ python wechat_group_bot.py
 详情参考leancloud管理台
 
 ![](http://oav6fgfj1.bkt.clouddn.com/lean5c45948b.png)
+
+# bokeh
+bokeh serve --show bokeh_app
