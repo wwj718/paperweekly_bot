@@ -42,7 +42,8 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 
 # 使用
 ```
-# git clone 
+sudo apt-get install libpq-dev python-dev libjpeg-dev libfreetype6-dev
+git clone https://github.com/wwj718/paperweekly_bot
 pip install -r requirements.txt
 set -x  LEANCLOUD_APP_ID xxx  # or export LEANCLOUD_APP_ID=xxx
 set -x LEANCLOUD_APP_KEY xxx
