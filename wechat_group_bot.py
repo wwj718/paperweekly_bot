@@ -14,7 +14,7 @@ from itchat.content import TEXT, PICTURE, SHARING #  ,ATTACHMENT,VIDEO, RECORDIN
 
 ##########log
 import logging
-LOG_FILE = "/tmp/wechat_3group.log"
+LOG_FILE = "/tmp/wechat_4group.log"
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
 logger = logging.getLogger(__name__)
 handler = logging.FileHandler(LOG_FILE)
@@ -116,6 +116,7 @@ def forward_message(msg,src_group,target_groups):
             if USE_LEANCLOUD:
                 push_message(message2push)
             logger.info("ready to push message to local db(sqlite)")
+            logger.info(message2push)
             db_store.push_message(message2push)
         #except e:
         except Exception as e:
@@ -207,13 +208,18 @@ def handle_text_msg(msg):
 
 
 # 全局设置
-group1_name = 'paper测试1'
-group2_name = 'paper测试2'
-group3_name = '测试m'
+#group1_name = 'paper测试1'
+#group2_name = 'paper测试2'
+#group3_name = '测试m'
+group1_name = 'PaperWeekly交流群'
+group2_name = 'PaperWeekly交流二群'
+group3_name = 'PaperWeekly交流三群'
+group4_name = 'PaperWeekly交流四群'
 group1 = GroupBot(group_name=group1_name)
 group2 = GroupBot(group_name=group2_name)
 group3 = GroupBot(group_name=group3_name)
-groups = (group1, group2, group3)  #list原有结构会被改变 ,内部元素是够会不可变
+group4 = GroupBot(group_name=group4_name)
+groups = (group1, group2, group3,group4)  #list原有结构会被改变 ,内部元素是够会不可变
 
 
 
