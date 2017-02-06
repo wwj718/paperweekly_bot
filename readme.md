@@ -65,5 +65,11 @@ python wechat_group_bot.py
 
 ![](http://oav6fgfj1.bkt.clouddn.com/lean5c45948b.png)
 
-# bokeh
-bokeh serve --show bokeh_app
+# bokeh (数据分析/可视化)
+`bokeh serve --show bokeh_app`
+
+接受所有的请求: `bokeh serve --show bokeh_app  --host "*" --port 5100 --address 0.0.0.0` 
+
+如果想在生产环境用，可以看我之前的项目配置：[jobsVisualization](https://github.com/wwj718/jobsVisualization)
+
+最近准备使用superset

@@ -148,18 +148,26 @@ def forward_message(msg,src_group,target_groups):
                 itchat.send(message,group._group_id)
         else:
             #普通文本消息
-            for group in target_groups:
-                # 推送到每个群
+            # bot回复论坛消息
+            response = handle_text_msg(msg).get("response") #来源小组不一样，回复
+            if response:
+                itchat.send(response,src_group._group_id)
+            # 推送到其他群
+            else:
+              #如果是网往论坛的则不转发
+              for group in target_groups:
                 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 logger.info((now, group._group_name, msg['ActualNickName'], msg["Text"]))
                 #if group._group_id:
                 message = '{}-at_id:{} 发言 ：\n{}'.format(msg['ActualNickName'],msg['at_id'],msg['Text'])
                 itchat.send(message,group._group_id) # 采用异步
+
     if msg["Type"] == 'Picture':
             # todo：上传到云端
             msg['Text'](msg['FileName'])  #下载
             for group in target_groups:
                 itchat.send_image(msg['FileName'], group._group_id)
+
     if msg['Type'] == 'Sharing':
         # 同样作为普通消息存入云端
         share_message = "@{}分享\n{} {}".format(
@@ -183,24 +191,24 @@ def handle_text_msg(msg):
     content = msg['Text']
 
     if '[疑问]' in content:
+        #发帖
         clean_content = re.split(r'\[疑问\]', content)[-1]
-        response = "response"#forum_client.post_thread(username,clean_content)
+        # 此处对接论坛的webhook
+        #forum_client.post_thread(username,clean_content)
+        response = "发帖成功：）"
         return {'type':'q','response':response}
-    if '[惊讶]' in content:
-        clean_content = re.split(r'\[惊讶\]', content)[-1]
-        answer = "qabot"#qa_bot.howdoi_zh(clean_content.encode('utf-8'))
-        response = "@{}\n".format(msg['ActualNickName'])+answer
-        return {'type':'qa','response':response}
     #if '/bot/t' in content:
     if content.startswith('[得意]'):
+        #回帖
         #判断下正则是够合格
         thread_id,clean_content = re.split(r'\[得意\].*?(?P<id>\d+)', content)[-2:]
-        response = "response"#forum_client.post_reply(username,thread_id,clean_content)
+        response = "回帖成功:)"#forum_client.post_reply(username,thread_id,clean_content)
         return {'type':'t','response':response}
-
     #if '/bot/h' in content:
     if '[闭嘴]' in content:
-        response='Hi @{} 使用说明如下：\n帮助:[闭嘴]\n发帖:[疑问] 帖子内容\n回帖:[得意](id) 回复内容\n搜索:[惊讶] 问题内容'.format(msg['ActualNickName'])
+        #help
+        #response='Hi @{} 使用说明如下：\n帮助:[闭嘴]\n发帖:[疑问] 帖子内容\n回帖:[得意](id) 回复内容\n搜索:[惊讶] 问题内容'.format(msg['ActualNickName'])
+        response='Hi @{} 使用说明如下：\n帮助:[闭嘴]\n发帖:[疑问] 帖子内容\n回帖:[得意](id) 回复内容'.format(msg['ActualNickName'])
         return {'type':'h','response':response}
     return {'type':None,'response':None}
 
@@ -208,18 +216,18 @@ def handle_text_msg(msg):
 
 
 # 全局设置
-#group1_name = 'paper测试1'
-#group2_name = 'paper测试2'
-#group3_name = '测试m'
-group1_name = 'PaperWeekly交流群'
-group2_name = 'PaperWeekly交流二群'
-group3_name = 'PaperWeekly交流三群'
-group4_name = 'PaperWeekly交流四群'
+group1_name = 'paper测试1'
+group2_name = 'paper测试2'
+group3_name = '测试m'
+#group1_name = 'PaperWeekly交流群'
+#group2_name = 'PaperWeekly交流二群'
+#group3_name = 'PaperWeekly交流三群'
+#group4_name = 'PaperWeekly交流四群'
 group1 = GroupBot(group_name=group1_name)
 group2 = GroupBot(group_name=group2_name)
 group3 = GroupBot(group_name=group3_name)
-group4 = GroupBot(group_name=group4_name)
-groups = (group1, group2, group3,group4)  #list原有结构会被改变 ,内部元素是够会不可变
+#group4 = GroupBot(group_name=group4_name)
+groups = (group1, group2, group3)#,group4)  #list原有结构会被改变 ,内部元素是够会不可变
 
 
 
@@ -250,7 +258,7 @@ def main():
                     print("{}激活,group_id:{}".format(group._group_name,group._group_id))
                     itchat.send_msg('机器人已激活: )', group._group_id)
 
-    print "End Main function"
+    #print "End Main function"
 
 itchat.auto_login(enableCmdQR=2,hotReload=True) #调整宽度：enableCmdQR=2
 thread.start_new_thread(itchat.run, ())
