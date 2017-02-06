@@ -187,14 +187,15 @@ def get_target_groups(src_group, groups):
     #print("from {} to {}".format(src_group._group_name,",".join([group._group_name for group in list_groups])))
 
 def handle_text_msg(msg):
-    #username = msg['ActualNickName'] # 发言者
+    username = msg['ActualNickName'] # 发言者
     content = msg['Text']
 
     if '[疑问]' in content:
         #发帖
         clean_content = re.split(r'\[疑问\]', content)[-1]
         # 此处对接论坛的webhook
-        #forum_client.post_thread(username,clean_content)
+        # 类似 forum_client.post_thread(username,clean_content)
+        # 其中username为微信用户昵称，clean_content为发帖内容
         response = "发帖成功：）"
         return {'type':'q','response':response}
     #if '/bot/t' in content:
@@ -202,7 +203,7 @@ def handle_text_msg(msg):
         #回帖
         #判断下正则是够合格
         thread_id,clean_content = re.split(r'\[得意\].*?(?P<id>\d+)', content)[-2:]
-        response = "回帖成功:)"#forum_client.post_reply(username,thread_id,clean_content)
+        response = "回帖成功:)"
         return {'type':'t','response':response}
     #if '/bot/h' in content:
     if '[闭嘴]' in content:
