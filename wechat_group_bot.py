@@ -11,7 +11,7 @@ import db_store
 import hashlib
 import itchat
 from itchat.content import TEXT, PICTURE, SHARING #  ,ATTACHMENT,VIDEO, RECORDING #语音
-
+import plugin
 ##########log
 import logging
 LOG_FILE = "/tmp/wechat_4group.log"
@@ -193,6 +193,12 @@ def handle_text_msg(msg):
     if '[疑问]' in content:
         #发帖
         clean_content = re.split(r'\[疑问\]', content)[-1]
+        #todo :之后重构到插件里 目前本末倒置了
+        try:
+            plugin.msg_input(msg=clean_content)
+        except Exception as e :
+            logger.error(str(e))
+
         # 此处对接论坛的webhook
         # 类似 forum_client.post_thread(username,clean_content)
         # 其中username为微信用户昵称，clean_content为发帖内容

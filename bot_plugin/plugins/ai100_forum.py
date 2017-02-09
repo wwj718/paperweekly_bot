@@ -7,10 +7,10 @@ def post_comment(msg):
     payload={}
     payload["type"]="comment" #
     payload["comment_content"]=msg #"#test from paperweekly bot\n hello ai100"
-    payload["post_id"]="34" #文章ID 94
-    payload["user_id"]="3" #pw=3
+    payload["post_id"]=94 #文章ID 94
+    payload["user_id"]=3 #pw=3
     try:
-        response = requests.post(url,json=payload) #json:json data:表单 params:url参数
+        response = requests.post(url,data=payload) #json:json data:表单 params:url参数
         return response
     except Exception as e:
         print(str(e))
@@ -18,7 +18,7 @@ def post_comment(msg):
 def run(**kwargs):
     msg = kwargs.get("msg")
     print({"ai_forum":msg})
-    #content="#test from paperweekly bot\n hello ai100"
-    #print(post_comment(content))
+    content="#test from paperweekly bot\n hello ai100"
+    print(post_comment(content).content)
 
 
