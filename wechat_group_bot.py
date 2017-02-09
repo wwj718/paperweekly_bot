@@ -22,7 +22,8 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 #######setting
-USE_LEANCLOUD = False #默认不使用消息云存储
+USE_LEANCLOUD = False#默认不使用消息云存储
+DEBUG = True
 if USE_LEANCLOUD:
     from leancloud_store import push_message
 
@@ -223,18 +224,24 @@ def handle_text_msg(msg):
 
 
 # 全局设置
-group1_name = 'paper测试1'
-group2_name = 'paper测试2'
-group3_name = '测试m'
-#group1_name = 'PaperWeekly交流群'
-#group2_name = 'PaperWeekly交流二群'
-#group3_name = 'PaperWeekly交流三群'
-#group4_name = 'PaperWeekly交流四群'
-group1 = GroupBot(group_name=group1_name)
-group2 = GroupBot(group_name=group2_name)
-group3 = GroupBot(group_name=group3_name)
-#group4 = GroupBot(group_name=group4_name)
-groups = (group1, group2, group3)#,group4)  #list原有结构会被改变 ,内部元素是够会不可变
+if DEBUG:
+    group1_name = 'paper测试1'
+    group2_name = 'paper测试2'
+    group3_name = '测试m'
+    group1 = GroupBot(group_name=group1_name)
+    group2 = GroupBot(group_name=group2_name)
+    group3 = GroupBot(group_name=group3_name)
+    groups = (group1, group2, group3)#,group4)  #list原有结构会被改变 ,内部元素是够会不可变
+else:
+    group1_name = 'PaperWeekly交流群'
+    group2_name = 'PaperWeekly交流二群'
+    group3_name = 'PaperWeekly交流三群'
+    group4_name = 'PaperWeekly交流四群'
+    group1 = GroupBot(group_name=group1_name)
+    group2 = GroupBot(group_name=group2_name)
+    group3 = GroupBot(group_name=group3_name)
+    group4 = GroupBot(group_name=group4_name)
+    groups = (group1, group2, group3,group4)  #list原有结构会被改变 ,内部元素是够会不可变
 
 
 
