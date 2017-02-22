@@ -12,6 +12,9 @@ import hashlib
 import itchat
 from itchat.content import TEXT, PICTURE, SHARING #  ,ATTACHMENT,VIDEO, RECORDING #语音
 import plugin
+
+from threading import Timer
+
 ##########log
 import logging
 LOG_FILE = "/tmp/wechat_4group.log"
@@ -23,12 +26,23 @@ logger.setLevel(logging.INFO)
 
 #######setting
 USE_LEANCLOUD = False#默认不使用消息云存储
-DEBUG = True
+DEBUG = False
 if USE_LEANCLOUD:
     from leancloud_store import push_message
 
-
+# flag 2小时提问时间 开始 结束
+IN_ACTION = False
 #########
+
+def end_action():
+    global IN_ACTION
+    IN_ACTION = False
+
+def begin_action():
+    global IN_ACTION
+    IN_ACTION = True
+    t = Timer(60 * 60 * 2,end_action)
+    t.start()
 
 
 #class GroupBot(threading.Thread): # 作为threading类
@@ -67,6 +81,7 @@ class GroupBot(object):  # 没必要多线程
 
 def forward_message(msg,src_group,target_groups):
     '''按类型发消息'''
+    msg["UserImg"] = ''
     if msg["Type"] == 'Text':
         '''
         print(itchat.get_friends())
@@ -77,6 +92,7 @@ def forward_message(msg,src_group,target_groups):
         '''
         logger.info("forward_message begin") # log
         logger.info(("forward message : ",msg)) # log
+
         # 跨群@ , 至于私聊 可以截图发微信号
         #把用户都存下,多给msg一个属性 at_id
         # logger.info((now, group._group_name, msg['ActualNickName'], msg["Text"]))
@@ -108,6 +124,7 @@ def forward_message(msg,src_group,target_groups):
                     url_with_uploading_img = user_img.set_user_img(group_user_id,buffer(img_data))
                     message2push["user_img"] = url_with_uploading_img
                     logger.info(("url_with_uploading_img: "+message2push["user_img"]))
+            msg["UserImg"] = message2push["user_img"]
         except Exception as e:
             logger.info("can not get user head img")
             logger.info(str(e))
@@ -188,13 +205,18 @@ def get_target_groups(src_group, groups):
     #print("from {} to {}".format(src_group._group_name,",".join([group._group_name for group in list_groups])))
 
 def handle_text_msg(msg):
+    global IN_ACTION
     username = msg['ActualNickName'] # 发言者
     content = msg['Text']
-
-    if '[疑问]' in content:
+    userlogo = msg["UserImg"]
+    # 触发
+    if "张俊" in username and '提问开始' in content:
+        begin_action()
+    if '[咖啡]' in content and IN_ACTION:
         #发帖
-        clean_content = re.split(r'\[疑问\]', content)[-1]
+        clean_content = re.split(r'\[咖啡\]', content)[-1]
         #todo :之后重构到插件里 目前本末倒置了
+        clean_content = "<span class='api_icon'>![](" + userlogo + ")</span><span class='api_nickname'>" + username + "</span>" + clean_content
         try:
             plugin.msg_input(msg=clean_content)
         except Exception as e :
@@ -206,17 +228,19 @@ def handle_text_msg(msg):
         response = "发帖成功：）"
         return {'type':'q','response':response}
     #if '/bot/t' in content:
+    '''
     if content.startswith('[得意]'):
         #回帖
         #判断下正则是够合格
         thread_id,clean_content = re.split(r'\[得意\].*?(?P<id>\d+)', content)[-2:]
         response = "回帖成功:)"
         return {'type':'t','response':response}
+    '''
     #if '/bot/h' in content:
-    if '[闭嘴]' in content:
+    if '[疑问]' in content:
         #help
         #response='Hi @{} 使用说明如下：\n帮助:[闭嘴]\n发帖:[疑问] 帖子内容\n回帖:[得意](id) 回复内容\n搜索:[惊讶] 问题内容'.format(msg['ActualNickName'])
-        response='Hi @{} 使用说明如下：\n帮助:[闭嘴]\n发帖:[疑问] 帖子内容\n回帖:[得意](id) 回复内容'.format(msg['ActualNickName'])
+        response='Hi @{} 使用说明如下：\n帮助:[疑问]\n提问:[咖啡] 问题内容'.format(msg['ActualNickName'])
         return {'type':'h','response':response}
     return {'type':None,'response':None}
 
