@@ -212,21 +212,24 @@ def handle_text_msg(msg):
     # 触发
     if "张俊" in username and '提问开始' in content:
         begin_action()
+        response = "活动开始! 2小时候结束:)"
+        return {'type':'b','response':response} #活动开始 群发
     if '[咖啡]' in content and IN_ACTION:
-        #发帖
+        #发帖 正则匹配
         clean_content = re.split(r'\[咖啡\]', content)[-1]
-        #todo :之后重构到插件里 目前本末倒置了
-        clean_content = "<span class='api_icon'>![](" + userlogo + ")</span><span class='api_nickname'>" + username + "</span>" + clean_content
-        try:
-            plugin.msg_input(msg=clean_content)
-        except Exception as e :
-            logger.error(str(e))
+        if clean_content:
+            #todo :之后重构到插件里 目前本末倒置了
+            clean_content = "<span class='api_icon'>![](" + userlogo + ")</span><span class='api_nickname'>" + username + "</span>" + clean_content
+            try:
+                plugin.msg_input(msg=clean_content)
+            except Exception as e :
+                logger.error(str(e))
 
-        # 此处对接论坛的webhook
-        # 类似 forum_client.post_thread(username,clean_content)
-        # 其中username为微信用户昵称，clean_content为发帖内容
-        response = "发帖成功：）"
-        return {'type':'q','response':response}
+            # 此处对接论坛的webhook
+            # 类似 forum_client.post_thread(username,clean_content)
+            # 其中username为微信用户昵称，clean_content为发帖内容
+            response = "@{} 提问成功：）".format(username)
+            return {'type':'q','response':response}
     #if '/bot/t' in content:
     '''
     if content.startswith('[得意]'):
