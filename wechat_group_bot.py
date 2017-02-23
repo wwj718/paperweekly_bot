@@ -212,7 +212,7 @@ def handle_text_msg(msg):
     # 触发
     if "张俊" in username and '提问开始' in content:
         begin_action()
-        response = "活动开始! 2小时候结束:)"
+        response = "活动开始! 2小时后结束:)"
         return {'type':'b','response':response} #活动开始 群发
     if '[咖啡]' in content and IN_ACTION:
         #发帖 正则匹配
@@ -264,11 +264,13 @@ else:
     group2_name = 'PaperWeekly交流二群'
     group3_name = 'PaperWeekly交流三群'
     group4_name = 'PaperWeekly交流四群'
+    group5_name = 'PaperWeekly交流五群'
     group1 = GroupBot(group_name=group1_name)
     group2 = GroupBot(group_name=group2_name)
     group3 = GroupBot(group_name=group3_name)
     group4 = GroupBot(group_name=group4_name)
-    groups = (group1, group2, group3,group4)  #list原有结构会被改变 ,内部元素是够会不可变
+    group5 = GroupBot(group_name=group5_name)
+    groups = (group1, group2, group3,group4,group5)  #list原有结构会被改变 ,内部元素是够会不可变
 
 
 

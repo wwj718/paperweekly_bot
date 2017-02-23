@@ -18,7 +18,7 @@ def post_comment(msg):
 def run(**kwargs):
     msg = kwargs.get("msg")
     print({"ai_forum":msg})
-    content="#test from paperweekly bot\n hello ai100"
+    content=msg#"#test from paperweekly bot\n hello ai100"
     print(post_comment(content).content)
 if __name__ == '__main__':
     post_comment("hello by pw bot")
