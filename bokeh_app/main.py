@@ -7,26 +7,28 @@ import sys
 
 from bokeh.layouts import row, widgetbox
 from bokeh.models import ColumnDataSource, CustomJS
-from bokeh.models.widgets import Slider, Button, DataTable, TableColumn, NumberFormatter,TextInput
+from bokeh.models.widgets import Slider, Button, DataTable, TableColumn, NumberFormatter, TextInput
 from bokeh.io import curdoc
 
-#https://pythonspot.com/sqlite-database-with-pandas/
+# https://pythonspot.com/sqlite-database-with-pandas/
 conn = sqlite3.connect(join(dirname(__file__), '../group_chat_message.db'))
-query = "SELECT * FROM message ORDER BY createdAt" #排序 时间
-df = pd.read_sql_query(query,conn)
-#print(df[:10]) #ok
-#sys.exit(0)
+query = "SELECT * FROM message ORDER BY createdAt"  # 排序 时间
+df = pd.read_sql_query(query, conn)
+# print(df[:10]) #ok
+# sys.exit(0)
 
 source = ColumnDataSource(data=dict())
 
+
 def update():
-    current = df[df.content.str.contains(search_text.value.strip())==True] #df[""]
+    current = df[df.content.str.contains(
+        search_text.value.strip()) == True]  # df[""]
     source.data = {
-        'group_name' :current.group_name,
+        'group_name': current.group_name,
         'group_user_name': current.group_user_name,
-        'content' : current.content,
-        'user_img' : current.user_img,
-        'createdAt' : current.createdAt,
+        'content': current.content,
+        'user_img': current.user_img,
+        'createdAt': current.createdAt,
     }
 
 search_text = TextInput(title="search")
@@ -34,7 +36,6 @@ search_text = TextInput(title="search")
 #slider = Slider(title="开始时间", start=10000, end=250000, value=150000, step=1000)
 #slider.on_change('value', lambda attr, old, new: update())
 search_text.on_change('value', lambda attr, old, new: update())
-
 
 
 '''
@@ -56,7 +57,7 @@ columns = [
 
 data_table = DataTable(source=source, columns=columns, width=800)
 
-controls = widgetbox(search_text) #, button)
+controls = widgetbox(search_text)  # , button)
 table = widgetbox(data_table)
 
 curdoc().add_root(row(controls, table))

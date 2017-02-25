@@ -48,7 +48,10 @@ pip install -r requirements.txt
 set -x  LEANCLOUD_APP_ID xxx  # or export LEANCLOUD_APP_ID=xxx
 set -x LEANCLOUD_APP_KEY xxx
 python db_store.py # 创建本地数据库（默认是sqlite，也可自行替换为mysql、PostgreSQL
+# 生成环境
 python wechat_group_bot.py
+# 调试
+DEBUG=True python wechat_group_bot  # 如果你用的是fish: env DEBUG=True python wechat_group_bot
 ```
 
 # 新增特性文档
