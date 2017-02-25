@@ -15,6 +15,7 @@ import itchat
 # ,ATTACHMENT,VIDEO, RECORDING #语音
 from itchat.content import TEXT, PICTURE, SHARING
 import plugin
+from utils import  broadcast
 
 from threading import Timer
 
@@ -58,7 +59,11 @@ IN_ACTION = False
 def end_action():
     # todo 通知所有群
     global IN_ACTION
+    global groups
+    message="@all 提问时间结束:)"
+    active_target_groups = [group for group in groups if group._group_id]
     IN_ACTION = False
+    broadcast(itchat,message,active_target_groups)
 
 
 def begin_action():

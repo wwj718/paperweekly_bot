@@ -16,5 +16,11 @@ def timestamp2time(timestamp):
     local = utc.to('Asia/Shanghai')
     return local.format('YYYY-MM-DD HH:mm:ss')
 
+
+def broadcast(itchat,message,target_groups):
+    # 给所有群广播消息
+    for group in target_groups:
+        itchat.send(message, group._group_id)
+
 if __name__ == '__main__':
     print(timestamp2time(get_now_timestamp()))  # ok
