@@ -42,11 +42,19 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 
 # 使用
 ```
+# 系统依赖
+## ubuntu
 sudo apt-get install libpq-dev python-dev libjpeg-dev libfreetype6-dev
+## centos
+sudo yum install python-devel libjpeg-devel zlib-devel
+# 拉取源码
 git clone https://github.com/wwj718/paperweekly_bot
+# 建议使用virtualenv先创建虚拟环境
 pip install -r requirements.txt
+# 是否启用leancloud可以在settings里设置
 set -x  LEANCLOUD_APP_ID xxx  # or export LEANCLOUD_APP_ID=xxx
 set -x LEANCLOUD_APP_KEY xxx
+
 python db_store.py # 创建本地数据库（默认是sqlite，也可自行替换为mysql、PostgreSQL
 # 生成环境
 python wechat_group_bot.py

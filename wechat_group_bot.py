@@ -8,14 +8,13 @@ import random
 import re
 import datetime
 import thread
-from localuser import LocalUserTool, UserImgCache
 import db_store
 import hashlib
 import itchat
 # ,ATTACHMENT,VIDEO, RECORDING #语音
 from itchat.content import TEXT, PICTURE, SHARING
 import plugin
-from utils import  broadcast
+from utils import  broadcast,timestamp2time
 
 from threading import Timer
 
@@ -28,9 +27,6 @@ def setup_logging(
     default_level=logging.INFO,
     env_key='LOG_CFG'
 ):
-    """Setup logging configuration
-
-    """
     path = default_path
     value = os.getenv(env_key, None)
     if value:
@@ -43,12 +39,15 @@ def setup_logging(
         logging.basicConfig(level=default_level)
 setup_logging()
 logger = logging.getLogger(__name__)
+chat_message_recorder_logger = logging.getLogger("chat_message_recorder")
 
 # setting
 import setting
-USE_LEANCLOUD = setting.USE_LEANCLOUD
+# 把头像改为可选
+USE_LEANCLOUD_FOR_LOG = setting.USE_LEANCLOUD_FOR_LOG
+USE_LEANCLOUD_FOR_IMAGE = setting.USE_LEANCLOUD_FOR_IMAGE
 DEBUG = setting.DEBUG
-if USE_LEANCLOUD:
+if USE_LEANCLOUD_FOR_LOG:
     from leancloud_store import push_message
 
 
@@ -90,18 +89,19 @@ class GroupBot(object):  # 没必要多线程
 
     def simple_reply(msg):
         print("reply message!")
-
+    '''
     def run(self):
         wait_time = random.randrange(1, 3)
         print("thread {}(group_name:{}) will wait {}s".format(
             self.name, self._group_name, wait_time))
         time.sleep(wait_time)
         print("thread {} finished".format(self.name))
+    '''
 
 
 def forward_message(msg, src_group, target_groups):
     '''按类型发消息'''
-    msg["UserImg"] = ''
+    msg["UserImg"] = '' #成为一个开关 只有开启采用
     if msg["Type"] == 'Text':
         '''
         #print(itchat.get_friends())
@@ -110,19 +110,23 @@ def forward_message(msg, src_group, target_groups):
         user = itchat.search_friends(userName=username)
         '''
         logger.info("forward_message begin")  # log for debug
-        logger.info(("forward message : ", msg))
+        logger.info(("forward message : ", msg)) #这里有所有的信息
 
         # 多给msg一个属性 at_id
         message2push = {}
         message2push["group_name"] = src_group._group_name
         message2push["content"] = msg["Text"]
         message2push["group_user_name"] = msg["ActualNickName"]
+        message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
         try:
+            # todo 这个那个包装为一个函数
             # todo 部分用户无法获取头像  chatroomid 错误
             # 头像
             # user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id)) #存储到本地
             # todo:第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"]
             # 是否被记录在本地数据库,免去向微信请求
+          if USE_LEANCLOUD_FOR_IMAGE:
+            from localuser import LocalUserTool, UserImgCache
             user_img = UserImgCache()
             group_user_id = msg["ActualUserName"]
             url_get_with_user_id = user_img.get_user_img_with_user_id(
@@ -153,18 +157,18 @@ def forward_message(msg, src_group, target_groups):
                     message2push["user_img"] = url_with_uploading_img
                     logger.info(("url_with_uploading_img: " +
                                  message2push["user_img"]))
-            msg["UserImg"] = message2push["user_img"]
+            msg["UserImg"] = message2push["user_img"] #.get("user_img")
         except Exception as e:
             logger.error("can not get user head img")
             logger.error('Failed to open file', exc_info=True)
 
         try:
             # 日志系统
-            if USE_LEANCLOUD:
+            if USE_LEANCLOUD_FOR_LOG:
                 logger.info("ready to push message to cloud")
                 push_message(message2push)
             logger.info("ready to push message to local file")
-            logger.info(message2push)
+            #logger.info(message2push)
             logger.info("ready to push message to local db(sqlite)")  # 有问题
             db_store.push_message(message2push)
         except Exception as e:
@@ -172,6 +176,7 @@ def forward_message(msg, src_group, target_groups):
             logger.info(str(e))
             # todo 有空优化
 
+        chat_message_recorder_logger.info(message2push) #记录所有待推送到云端的信息 时间
         actual_user_name = msg["ActualNickName"]
         # for at id
         localuser_tool = LocalUserTool()
@@ -324,9 +329,10 @@ def main():
     def simple_reply(msg):
         global groups
         print("group message input from wechat(begin)")
+        # black box 不影响功能 可忽视
         for group in groups:
-            logger.info(("local_group", group._group_id, group._group_name))
-            logger.info("meg from group:{}".format(msg['FromUserName']))
+            #logger.info(("local_group", group._group_id, group._group_name))
+            #logger.info("msg from group:{}".format(msg['FromUserName']))
             if msg['FromUserName'] == group._group_id:
                 # 一条消息只能匹配一次
                 src_group = group  # 消息来源群组
@@ -346,7 +352,8 @@ def main():
                     group.set_id(group_instance[0]['UserName'])
                     print("{}激活,group_id:{}".format(
                         group._group_name, group._group_id))
-                    itchat.send_msg('机器人已激活: )', group._group_id)
+                    if DEBUG:
+                        itchat.send_msg('机器人已激活: )', group._group_id)
 
     # print "End Main function"
 

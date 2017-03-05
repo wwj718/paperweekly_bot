@@ -16,6 +16,9 @@ def timestamp2time(timestamp):
     local = utc.to('Asia/Shanghai')
     return local.format('YYYY-MM-DD HH:mm:ss')
 
+def totimestamp(time_string):
+    a=arrow.get(time_string, 'YYYY-MM-DD HH:mm:ss')
+    return a.timestamp #之后使用timestamp2time 试试
 
 def broadcast(itchat,message,target_groups):
     # 给所有群广播消息

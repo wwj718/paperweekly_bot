@@ -92,3 +92,4 @@ ENV/
 
 # wwj
 aws_data/
+local.py
