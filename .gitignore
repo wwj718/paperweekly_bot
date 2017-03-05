@@ -91,5 +91,5 @@ ENV/
 .ropeproject
 
 # wwj
-aws_data/
 local.py
+chat_data/

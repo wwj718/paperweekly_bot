@@ -6,7 +6,7 @@
 from tinydb import TinyDB, where, Query
 import time
 import hashlib
-from leancloud_store import push_message, save_file
+#from leancloud_store import push_message, save_file
 import uuid
 
 
@@ -96,6 +96,7 @@ class UserImgCache(object):
         '''
         img_data 是 buffer
         '''
+        from leancloud_store import save_file
         localuser = {}
         localuser["group_user_id"] = group_user_id
         # 一致 26771cad667b860261090a8d52f3299c wwj

@@ -10,6 +10,7 @@ import datetime
 import thread
 import db_store
 import hashlib
+from localuser import LocalUserTool, UserImgCache
 import itchat
 # ,ATTACHMENT,VIDEO, RECORDING #语音
 from itchat.content import TEXT, PICTURE, SHARING
@@ -126,7 +127,7 @@ def forward_message(msg, src_group, target_groups):
             # todo:第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"]
             # 是否被记录在本地数据库,免去向微信请求
           if USE_LEANCLOUD_FOR_IMAGE:
-            from localuser import LocalUserTool, UserImgCache
+            #from localuser import LocalUserTool, UserImgCache
             user_img = UserImgCache()
             group_user_id = msg["ActualUserName"]
             url_get_with_user_id = user_img.get_user_img_with_user_id(
@@ -170,7 +171,7 @@ def forward_message(msg, src_group, target_groups):
             logger.info("ready to push message to local file")
             #logger.info(message2push)
             logger.info("ready to push message to local db(sqlite)")  # 有问题
-            db_store.push_message(message2push)
+            #db_store.push_message(message2push)
         except Exception as e:
             logger.error("log error")
             logger.info(str(e))
