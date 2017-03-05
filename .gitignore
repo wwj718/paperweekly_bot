@@ -93,3 +93,6 @@ ENV/
 # wwj
 local.py
 chat_data/
+itchat.pkl
+localuser.json
+user_img_cache.json

@@ -1,3 +1,5 @@
+ps: 不小心把私有数据提交上来，于是我把项目删了重建，丢失了issue和pr好可惜，也给提pr的同学道歉
+
 # paperweekly bot
 paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweekly_forum)，是其组件之一，当时为paperweek设计，多数需求也来自群友的讨论，具体设计可以参考我的这篇文章：[论坛机器人的技术实现](http://blog.just4fun.site/paperweekly-forum-bot.html)
 
@@ -61,6 +63,21 @@ python wechat_group_bot.py
 # 调试
 DEBUG=True python wechat_group_bot  # 如果你用的是fish: env DEBUG=True python wechat_group_bot
 ```
+
+# 提醒
+来自ai100的使用反馈： 群名字符串之间不应该有包括关系，否则可能群激活的时候，会出现问题，即某个群收不到消息，而另一个群被重复转发
+
+
+诸如
+
+"机器学习群"和"机器学习群1"可能造成问题，后者字符串包含了前者
+
+改为"机器学习群"和"机器学习1群"则没有问题
+
+# bug记录
+群头像无法获取的问题
+
+确定是itchat的问题，已经提交PR，猜测是腾讯更新了参数名
 
 # 新增特性文档
 ### 云端存储

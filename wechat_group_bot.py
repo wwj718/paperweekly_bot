@@ -202,6 +202,7 @@ def forward_message(msg, src_group, target_groups):
                 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 logger.info((now, group._group_name, msg[
                             'ActualNickName'], msg["Text"]))
+                # 加入群名 group._group_name 做一个映射
                 message = u'@{} \n{}-at_id:{} 发言 ：\n{}'.format(
                     actual_user_name, msg['ActualNickName'], msg['at_id'], message_text)
                 #message = u'@{}\u2005\n : {}'.format(actual_user_name,message_text)
@@ -309,6 +310,8 @@ if DEBUG:
     group3 = GroupBot(group_name=group3_name)
     groups = (group1, group2, group3)  # ,group4)  #list原有结构会被改变 ,内部元素是够会不可变
 else:
+    # 注意 ai100使用过程发现群名字符串不能有包含关系，否则可能造成错误
+    # 量子位今天的bug猜测也是这个原因
     group1_name = 'PaperWeekly交流群'
     group2_name = 'PaperWeekly交流二群'
     group3_name = 'PaperWeekly交流三群'
