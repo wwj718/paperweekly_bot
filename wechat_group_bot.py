@@ -90,15 +90,6 @@ class GroupBot(object):  # 没必要多线程
 
     def simple_reply(msg):
         print("reply message!")
-    '''
-    def run(self):
-        wait_time = random.randrange(1, 3)
-        print("thread {}(group_name:{}) will wait {}s".format(
-            self.name, self._group_name, wait_time))
-        time.sleep(wait_time)
-        print("thread {} finished".format(self.name))
-    '''
-
 
 def forward_message(msg, src_group, target_groups):
     '''按类型发消息'''
@@ -120,44 +111,34 @@ def forward_message(msg, src_group, target_groups):
         message2push["group_user_name"] = msg["ActualNickName"]
         message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
         try:
-            # todo 这个那个包装为一个函数
-            # todo 部分用户无法获取头像  chatroomid 错误
-            # 头像
+            # todo 这个那个包装为一个函数 减少副作用 传入什么 ，输出什么
+            # 部分用户无法获取头像  chatroomid 错误 原因在itchat username
             # user_head_img = itchat.get_head_img(userName=msg["ActualUserName"],chatroomUserName=src_group._group_id,picDir="/tmp/wechat_user/{}".format(img_id)) #存储到本地
-            # todo:第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"]
-            # 是否被记录在本地数据库,免去向微信请求
+            # 第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"]
           if USE_LEANCLOUD_FOR_IMAGE:
             #from localuser import LocalUserTool, UserImgCache
             user_img = UserImgCache()
             group_user_id = msg["ActualUserName"]
-            url_get_with_user_id = user_img.get_user_img_with_user_id(
-                group_user_id)  # 第一层缓存
+            url_get_with_user_id = user_img.get_user_img_with_user_id(group_user_id)  # 第一层缓存 , 掉线后，group_user_id变化
             if url_get_with_user_id:
-                message2push["user_img"] = url_get_with_user_id
-                logger.info(("url_get_with_user_id: " +
-                             message2push["user_img"]))
+                message2push["user_img"] = url_get_with_user_id #return
+                #logger.info("url_get_with_user_id: %s" ,message2push["user_img"])
             else:
                 # 重新登录user id 变了，但是img md5还有效
-                # todo 无法获取头像 可能是这么问题 chatroomUserName
-                logging.debug("ActualUserName :%s, src_group _group_id: %s", msg[
-                              "ActualUserName"], src_group._group_id)
-                img_data = itchat.get_head_img(userName=msg[
-                                               "ActualUserName"], chatroomUserName=src_group._group_id)  # .getvalue()#前头是str #有时候错误
+                #logging.debug("ActualUserName :%s, src_group _group_id: %s", msg["ActualUserName"], src_group._group_id)
+                img_data = itchat.get_head_img(userName=msg["ActualUserName"], chatroomUserName=src_group._group_id)  # .getvalue()#前头是str #有时候错误
                 # logging.debug(img_data)
                 img_md5 = hashlib.md5(buffer(img_data)).hexdigest()
-                url_get_with_img_md5 = user_img.get_user_img_with_img_md5(
-                    img_md5)
+                url_get_with_img_md5 = user_img.get_user_img_with_img_md5(img_md5)
                 if url_get_with_img_md5:
                     message2push["user_img"] = url_get_with_img_md5
-                    logger.info(("url_get_with_img_md5: " +
-                                 message2push["user_img"]))
+                    #logger.info("url_get_with_img_md5: %s", message2push["user_img"])
                 else:
                     # 如果两级缓存都没有命中,再上传头像
-                    url_with_uploading_img = user_img.set_user_img(
-                        group_user_id, buffer(img_data))
+                    url_with_uploading_img = user_img.set_user_img(group_user_id, buffer(img_data))
+
                     message2push["user_img"] = url_with_uploading_img
-                    logger.info(("url_with_uploading_img: " +
-                                 message2push["user_img"]))
+                    #logger.info("url_with_uploading_img: %s",message2push["user_img"])
             msg["UserImg"] = message2push["user_img"] #.get("user_img")
         except Exception as e:
             logger.error("can not get user head img")
@@ -170,8 +151,8 @@ def forward_message(msg, src_group, target_groups):
                 push_message(message2push)
             logger.info("ready to push message to local file")
             #logger.info(message2push)
-            logger.info("ready to push message to local db(sqlite)")  # 有问题
-            #db_store.push_message(message2push)
+            logger.info("ready to push message to local db(sqlite)")
+            db_store.push_message(message2push)
         except Exception as e:
             logger.error("log error")
             logger.info(str(e))
@@ -228,12 +209,12 @@ def forward_message(msg, src_group, target_groups):
     # 之后的消息统一转发
     if msg["Type"] == 'Picture':
             # todo：上传到云端
-        msg['Text'](msg['FileName'])  # 下载
+        msg['Text'](msg['FileName'])  # 下载 其他大文件 异步使用另一个线程
         for group in target_groups:
             itchat.send_image(msg['FileName'], group._group_id)
 
     if msg['Type'] == 'Sharing':
-        # 同样作为普通消息存入log
+        # todo: 同样作为普通消息存入log
         share_message = "@{}分享\n{} {}".format(
             msg['ActualNickName'], msg["Url"].replace("amp;", ""), msg["Text"])
         for group in target_groups:
@@ -309,9 +290,14 @@ if DEBUG:
     group2 = GroupBot(group_name=group2_name)
     group3 = GroupBot(group_name=group3_name)
     groups = (group1, group2, group3)  # ,group4)  #list原有结构会被改变 ,内部元素是够会不可变
+    #topic groups pw
+    # 主题群消息定期发往大群
+    topic_groups=()
+    #other group ai100
+    other_group_map= {} #用于存储id->name 映射
 else:
     # 注意 ai100使用过程发现群名字符串不能有包含关系，否则可能造成错误
-    # 量子位今天的bug猜测也是这个原因
+    # 量子位今天的异常也是这个原因
     group1_name = 'PaperWeekly交流群'
     group2_name = 'PaperWeekly交流二群'
     group3_name = 'PaperWeekly交流三群'
@@ -325,6 +311,12 @@ else:
     # list原有结构会被改变 ,内部元素是够会不可变
     groups = (group1, group2, group3, group4, group5)
 
+    #topic groups pw
+    # 主题群消息定期发往大群
+    topic_groups=()
+    #other group ai100
+    other_group_map= {} #用于存储id->name 映射
+
 
 # 全局入口
 def main():
@@ -332,38 +324,72 @@ def main():
     @itchat.msg_register([TEXT, SHARING, PICTURE], isGroupChat=True)
     def simple_reply(msg):
         global groups
+        global other_group_map
         print("group message input from wechat(begin)")
-        # black box 不影响功能 可忽视
+        # 互相转发的群
         for group in groups:
             #logger.info(("local_group", group._group_id, group._group_name))
             #logger.info("msg from group:{}".format(msg['FromUserName']))
             if msg['FromUserName'] == group._group_id:
                 # 一条消息只能匹配一次
                 src_group = group  # 消息来源群组
-                target_groups = get_target_groups(
-                    src_group, tuple(groups))  # 消息发往的其他群
+                target_groups = get_target_groups(src_group, tuple(groups))  # 消息发往的目标群
                 # 筛选出已激活的
-                active_target_groups = [
-                    group for group in target_groups if group._group_id]
-                forward_message(
-                    msg, src_group, active_target_groups)  # !!内部逻辑入口
+                active_target_groups = [group for group in target_groups if group._group_id]
+                forward_message(msg, src_group, active_target_groups)  # !!内部逻辑入口
             if not group._group_id:
                 # 如果群未被激活，则开始搜索群id
                 # 每条消息都找一下，维护一个全局群id列表
-                group_instance = itchat.search_chatrooms(
-                    name=group._group_name)
+                group_instance = itchat.search_chatrooms(name=group._group_name)
                 if group_instance:
                     group.set_id(group_instance[0]['UserName'])
-                    print("{}激活,group_id:{}".format(
-                        group._group_name, group._group_id))
+                    print("{}激活,group_id:{}".format(group._group_name, group._group_id))
                     if DEBUG:
                         itchat.send_msg('机器人已激活: )', group._group_id)
+
+        # todo 都需要头像 拆分出来
+
+        # topic groups 只定期发送到大群
+        # forward_message(msg, src_group, active_target_groups)
+        # 也是只存储，只是定期看一下数据，然后转让，定时任务
+        # 定时任务 不影响主线程 https://github.com/mrhwick/schedule/blob/master/schedule/__init__.py 仅仅把schedule.run_pending()改为run_continuously()
+        # 使用本地数据库查询 时间用timestamp arrow
+        #db_store.push_message(message2push)
+        #然后写查询 每2小时查询一下 pillow生成图片 使用jupyter来做
+        # 大体上的布局 [xx]:xxx
+        # 需求 摘要+链接(网页)
+        ##############################################
+        # log other groups  记录群消息
+        # 作为群的一种类型 如果是这种类型的消息则不转发 只存储
+        # 获取群名，获取头像 独立函数 缓存
+
+        is_other_groups_msg = msg['FromUserName'] not in [group._group_id for group in groups]
+        if setting.PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD and is_other_groups_msg:
+            # 没有头像
+            from leancloud_store import push_message
+            other_group_FromUserName = msg['FromUserName']
+            other_group_NickName =  other_group_map.get(other_group_FromUserName)
+            # 建立缓存 维护一个字典即可，不需要永久化 todo 头像也这样做
+            if not other_group_NickName:
+                other_group = itchat.search_chatrooms(userName=other_group_FromUserName)
+                other_group_NickName = other_group["NickName"]
+                logger.debug("store other_group_NickName to other_group_map")
+                other_group_map[other_group_FromUserName] = other_group_NickName
+            message2push={}
+            message2push["content"] = msg["Text"]
+            message2push["group_user_name"] = msg["ActualNickName"]
+            message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
+            message2push["group_name"] = other_group_NickName
+            logger.info("ready to push other group message to cloud")
+            push_message(message2push)
+
+            #import IPython;IPython.embed()
 
     # print "End Main function"
 
 itchat.auto_login(enableCmdQR=2, hotReload=True)  # 调整宽度：enableCmdQR=2
 thread.start_new_thread(itchat.run, ())
 
-while 1:
+while True:
     main()
     time.sleep(1)

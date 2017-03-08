@@ -6,6 +6,7 @@ from leancloud import Object
 #from leancloud import Query
 import os
 import random
+from utils import timestamp2time
 
 # 设置环境变量
 # set -x  LEANCLOUD_APP_ID xxx | except
@@ -35,6 +36,20 @@ def push_message(message):
     for key in message:
         message_model.set(key, message.get(key))
     message_model.save()
+
+def message2cloud(msg):
+    '''
+    for ai100
+    所有群消息都存下来，任何的群都为其建立映射 群名映射
+    itchat.search_chatrooms(userName='@@abcdefg1234567') #建立缓存
+    # 分解： 把头像部分抽象为函数，把群名获取抽象为函数 把缓存考虑在内
+    https://github.com/youfou/wxpy
+    '''
+    message2push={}
+    message2push["content"] = msg["Text"]
+    message2push["group_user_name"] = msg["ActualNickName"]
+    message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
+    push_message(message2push)
 
 
 def save_file(filename, data):
