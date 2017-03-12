@@ -15,7 +15,7 @@ import itchat
 # ,ATTACHMENT,VIDEO, RECORDING #语音
 from itchat.content import TEXT, PICTURE, SHARING
 import plugin
-from utils import  broadcast,timestamp2time
+from utils import  broadcast,timestamp2time,get_user_img #get_user_img(itchat,msg,user_img,group_id):
 
 from threading import Timer
 
@@ -117,7 +117,9 @@ def forward_message(msg, src_group, target_groups):
             # 第一层缓存，获取头像之前，先检查本轮对话中 msg["ActualUserName"]
           if USE_LEANCLOUD_FOR_IMAGE:
             #from localuser import LocalUserTool, UserImgCache
-            user_img = UserImgCache()
+            user_img_cache = UserImgCache()
+            user_img_url = get_user_img(itchat,msg,user_img_cache,src_group._group_id)
+            '''
             group_user_id = msg["ActualUserName"]
             url_get_with_user_id = user_img.get_user_img_with_user_id(group_user_id)  # 第一层缓存 , 掉线后，group_user_id变化
             if url_get_with_user_id:
@@ -139,7 +141,8 @@ def forward_message(msg, src_group, target_groups):
 
                     message2push["user_img"] = url_with_uploading_img
                     #logger.info("url_with_uploading_img: %s",message2push["user_img"])
-            msg["UserImg"] = message2push["user_img"] #.get("user_img")
+            '''
+            msg["UserImg"] = message2push["user_img"] = user_img_url #.get("user_img")
         except Exception as e:
             logger.error("can not get user head img")
             logger.error('Failed to open file', exc_info=True)
@@ -324,7 +327,7 @@ def main():
     @itchat.msg_register([TEXT, SHARING, PICTURE], isGroupChat=True)
     def simple_reply(msg):
         global groups
-        global other_group_map
+        global other_group_map #头像也用这个思路，groupUserName不需要永久化
         print("group message input from wechat(begin)")
         # 互相转发的群
         for group in groups:
@@ -354,8 +357,8 @@ def main():
         # 也是只存储，只是定期看一下数据，然后转让，定时任务
         # 定时任务 不影响主线程 https://github.com/mrhwick/schedule/blob/master/schedule/__init__.py 仅仅把schedule.run_pending()改为run_continuously()
         # 使用本地数据库查询 时间用timestamp arrow
-        #db_store.push_message(message2push)
-        #然后写查询 每2小时查询一下 pillow生成图片 使用jupyter来做
+        # db_store.push_message(message2push)
+        # 然后写查询 每2小时查询一下 pillow生成图片 使用jupyter来做
         # 大体上的布局 [xx]:xxx
         # 需求 摘要+链接(网页)
         ##############################################
@@ -380,6 +383,9 @@ def main():
             message2push["group_user_name"] = msg["ActualNickName"]
             message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
             message2push["group_name"] = other_group_NickName
+            user_img_cache = UserImgCache()
+            user_img_url = get_user_img(itchat,msg,user_img_cache,other_group_FromUserName)
+            message2push["user_img"] = user_img_url
             logger.info("ready to push other group message to cloud")
             push_message(message2push)
 
