@@ -321,8 +321,12 @@ else:
     # list原有结构会被改变 ,内部元素是够会不可变
     groups = (group1, group2, group3, group4, group5)
     '''
-    group_name_list = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群']
-    groups = tuple([GroupBot(group_name=group_name) for group_name in group_name_list])
+
+    group_name_list1 = ['机器学习日报1','机器学习日报2','机器学习日报3']
+    group_name_list2 = ['计算机视觉日报1','计算机视觉日报2','计算机视觉日报3']
+    groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
+    groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
+    groups_family = (groups1,groups2)
     #topic groups pw
     # 主题群消息定期发往大群
     topic_groups=()
