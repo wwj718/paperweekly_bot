@@ -55,7 +55,7 @@ if USE_LEANCLOUD_FOR_LOG:
 # action
 IN_ACTION = False
 
-
+'''
 def end_action():
     # todo 通知所有群
     global IN_ACTION
@@ -71,6 +71,7 @@ def begin_action():
     IN_ACTION = True
     t = Timer(setting.ACTION_TIME, end_action)
     t.start()
+'''
 
 
 class GroupBot(object):  # 没必要多线程
@@ -244,7 +245,7 @@ def handle_text_msg(msg):
     userlogo = msg["UserImg"]
     # 触发
     if username in setting.ACTION_ADMIN and setting.ACTION_KEYWORD in content:
-        begin_action()
+        #begin_action() # ai100不需要
         response = "活动开始! 2小时后结束:)"
         return {'type': 'b', 'response': response}  # 活动开始 群发
     if '[咖啡]' in content and IN_ACTION:
@@ -284,23 +285,29 @@ def handle_text_msg(msg):
     return {'type': None, 'response': None}  # 无标记
 
 
-# 全局设置
+# 移到setting
 if DEBUG:
+    '''
     group1_name = 'paper测试1'
     group2_name = 'paper测试2'
     group3_name = '测试m'
     group1 = GroupBot(group_name=group1_name)
     group2 = GroupBot(group_name=group2_name)
     group3 = GroupBot(group_name=group3_name)
-    groups = (group1, group2, group3)  # ,group4)  #list原有结构会被改变 ,内部元素是够会不可变
-    #topic groups pw
-    # 主题群消息定期发往大群
+    groups = (group1, group2, group3)
+    '''
+    group_name_list1 = ['paper测试1','paper测试2','测试m']
+    group_name_list2 = ['第二类1','第二类2']
+    groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
+    groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
+    groups_family = (groups1,groups2)
+
     topic_groups=()
-    #other group ai100
-    other_group_map= {} #用于存储id->name 映射
+    other_group_map= {}
 else:
     # 注意 ai100使用过程发现群名字符串不能有包含关系，否则可能造成错误
     # 量子位今天的异常也是这个原因
+    '''
     group1_name = 'PaperWeekly交流群'
     group2_name = 'PaperWeekly交流二群'
     group3_name = 'PaperWeekly交流三群'
@@ -313,7 +320,9 @@ else:
     group5 = GroupBot(group_name=group5_name)
     # list原有结构会被改变 ,内部元素是够会不可变
     groups = (group1, group2, group3, group4, group5)
-
+    '''
+    group_name_list = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群']
+    groups = tuple([GroupBot(group_name=group_name) for group_name in group_name_list])
     #topic groups pw
     # 主题群消息定期发往大群
     topic_groups=()
@@ -326,11 +335,12 @@ def main():
     # 群聊，TEXT(filter)
     @itchat.msg_register([TEXT, SHARING, PICTURE], isGroupChat=True)
     def simple_reply(msg):
-        global groups
+        global groups_family
         global other_group_map #头像也用这个思路，groupUserName不需要永久化
         print("group message input from wechat(begin)")
         # 互相转发的群
-        for group in groups:
+        for groups in groups_family:
+          for group in groups:
             #logger.info(("local_group", group._group_id, group._group_name))
             #logger.info("msg from group:{}".format(msg['FromUserName']))
             if msg['FromUserName'] == group._group_id:
@@ -366,7 +376,7 @@ def main():
         # 作为群的一种类型 如果是这种类型的消息则不转发 只存储
         # 获取群名，获取头像 独立函数 缓存
 
-        is_other_groups_msg = msg['FromUserName'] not in [group._group_id for group in groups]
+        is_other_groups_msg = msg['FromUserName'] not in [group._group_id for groups in groups_family for group in groups]#[group._group_id for group in groups]
         if setting.PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD and is_other_groups_msg:
             # 没有头像
             from leancloud_store import push_message

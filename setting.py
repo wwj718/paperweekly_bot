@@ -35,3 +35,8 @@ else:
 ACTION_KEYWORD = "提问开始"
 ACTION_TIME = 60 * 60 * 2  # 2 hour
 ##############
+
+
+### 分组功能(ai100)
+# 机器学习日报 计算机视觉日报  独立转发
+#group_family
