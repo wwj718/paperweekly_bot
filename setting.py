@@ -7,8 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 ##########leancloud
-USE_LEANCLOUD_FOR_LOG =  False# 默认不使用消息云存储 # pw False / ai100 True
-USE_LEANCLOUD_FOR_IMAGE = True  # 默认不使用消息云存储 但是头像一直在用它
+# 默认禁用leancloud ，如果需要把消息同步到leancloud，以便于其他程序与它对接，请自行注册leancloud,并启用以下配置
+USE_LEANCLOUD_FOR_LOG =  False # 默认不使用消息云存储 # pw False / ai100 True
+USE_LEANCLOUD_FOR_IMAGE = False  # 默认不使用消息云存储 但是头像一直在用它
 PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD = False # pw False / ai100 True
 ###########
 

@@ -3,7 +3,7 @@ ps: 不小心把私有数据提交上来，于是我把项目删了重建，丢�
 # paperweekly bot
 paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweekly_forum)，是其组件之一，当时为paperweek设计，多数需求也来自群友的讨论，具体设计可以参考我的这篇文章：[论坛机器人的技术实现](http://blog.just4fun.site/paperweekly-forum-bot.html)
 
-这部分似乎挺多人都需要（我的两个朋友的创业公司都用到它，最近infoq和ai100也打算采用）
+这部分似乎挺多人都需要（除了PaperWeekly之外,我的两个朋友的创业公司用到它，AI100和量子位也在使用）
 
 所以我将它单独拆分出来，独立维护
 
