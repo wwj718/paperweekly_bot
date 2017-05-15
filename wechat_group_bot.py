@@ -296,7 +296,7 @@ if DEBUG:
     group3 = GroupBot(group_name=group3_name)
     groups = (group1, group2, group3)
     '''
-    group_name_list1 = ['paper测试1','paper测试2','测试m']
+    group_name_list1 = ['paper测试1','paper测试2'] #第二类是种瓜创建的
     group_name_list2 = ['第二类1','第二类2']
     groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
     groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
@@ -322,8 +322,8 @@ else:
     groups = (group1, group2, group3, group4, group5)
     '''
 
-    group_name_list1 = ['机器学习日报1','机器学习日报2','机器学习日报3']
-    group_name_list2 = ['计算机视觉日报1','计算机视觉日报2','计算机视觉日报3']
+    group_name_list1 = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群','PaperWeekly交流六群','PaperWeekly交流七群']
+    group_name_list2 = ['PaperWeekly CV群','PaperWeekly CV二群']
     groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
     groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
     groups_family = (groups1,groups2)

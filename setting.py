@@ -7,9 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 ##########leancloud
-USE_LEANCLOUD_FOR_LOG =  True# 默认不使用消息云存储 # pw False / ai100 True
-USE_LEANCLOUD_FOR_IMAGE = True  # 默认不使用消息云存储 但是头像一直在用它
-PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD = True # pw False / ai100 True
+USE_LEANCLOUD_FOR_LOG =  False# 默认不使用消息云存储 # pw False / ai100 True
+USE_LEANCLOUD_FOR_IMAGE = False  # 默认不使用消息云存储 但是头像一直在用它
+PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD = False # pw False / ai100 True
 ###########
 
 ############# debug
@@ -19,7 +19,7 @@ PUSH_ALL_GROUP_MESSAGE_TO_LEANCLOUD = True # pw False / ai100 True
 DEBUG = False  # 使用环境变量，不必修改文件
 is_debug = os.getenv("DEBUG", None)
 if is_debug:
-    DEBUG = is_debug
+    DEBUG = True
 #print(DEBUG)
 ############
 
