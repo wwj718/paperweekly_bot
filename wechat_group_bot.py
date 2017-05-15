@@ -306,13 +306,17 @@ else:
     group3_name = 'PaperWeekly交流三群'
     group4_name = 'PaperWeekly交流四群'
     group5_name = 'PaperWeekly交流五群'
+    group6_name = 'PaperWeekly交流六群'
+    group7_name = 'PaperWeekly交流七群'
     group1 = GroupBot(group_name=group1_name)
     group2 = GroupBot(group_name=group2_name)
     group3 = GroupBot(group_name=group3_name)
     group4 = GroupBot(group_name=group4_name)
     group5 = GroupBot(group_name=group5_name)
+    group6 = GroupBot(group_name=group6_name)
+    group7 = GroupBot(group_name=group7_name)
     # list原有结构会被改变 ,内部元素是够会不可变
-    groups = (group1, group2, group3, group4, group5)
+    groups = (group1, group2, group3, group4, group5,group6,group7)
 
     #topic groups pw
     # 主题群消息定期发往大群
