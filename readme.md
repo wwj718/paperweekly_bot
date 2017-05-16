@@ -7,6 +7,8 @@ paperweekly_bot 拆分自[paperweekly_forum](https://github.com/wwj718/paperweek
 
 所以我将它单独拆分出来，独立维护
 
+ps:如果希望在同类型的组内同步消息(存在多种类型的分组)，请使用ai100分支
+
 # 准备增加的特性
 *  消息云端存储、持久化（建议来自@MT）
 *  消息管理界面
