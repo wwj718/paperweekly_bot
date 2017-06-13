@@ -215,6 +215,15 @@ def forward_message(msg, src_group, target_groups):
             # todo：上传到云端
         msg['Text'](msg['FileName'])  # 下载 其他大文件 异步使用另一个线程
         for group in target_groups:
+            # todo msg['FileName'] 文件名
+            # db_store.push_message(message2push)
+            message2push = {}
+            message2push["group_name"] = src_group._group_name
+            message2push["content"] = ""
+            message2push["group_user_name"] = msg["ActualNickName"]
+            message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
+            message2push["user_img"] = "http://manage.paperweekly.site/{}".fotmat(msg['FileName']) #外部url
+            db_store.push_message(message2push)
             itchat.send_image(msg['FileName'], group._group_id)
 
     if msg['Type'] == 'Sharing':

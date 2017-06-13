@@ -39,7 +39,7 @@ class Message(BaseModel):
     group_name = CharField()
     content = CharField()
     group_user_name = CharField()
-    user_img = CharField(null = True) #url 可空
+    user_img = CharField(null = True) #url 可空 本地url 用于存放图片
     createdAt = IntegerField(default=get_now_timestamp) #默认自创建(使用函数) , 使用arrow
     updatedAt = IntegerField(default=get_now_timestamp) #命名与leancloud默认的一致,time 使用unix时间戳 使用数字 posixTimestamp
     # 使用默认的世界有更多工具方便管理 pandas/boken默认处理的时间是什么，还是用默认的好，需要处理在用arrow
