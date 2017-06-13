@@ -47,7 +47,7 @@ def update(begin=0):
     df = df[(df['createdAt']>begin_date_string)]#.tail()
     df.index=df['createdAt']
     #df["create_time"]= df.createdAt.apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
-    csv_df = df[['group_name', 'group_user_name',"content"]]
+    csv_df = df[['group_name', 'group_user_name',"content","user_img"]]
     # 只取几个属性
     '''
     source.data = {
@@ -112,7 +112,7 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             #中文问题
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            file.save(os.path.join(UPLOAD_FOLDER, filename)) # 加上uuid 原本就没问题
             #url = #str(filename)
             url = "http://admin.paperweekly.site/uploads/{}".format(str(filename))
             return url
@@ -129,6 +129,9 @@ def upload_file():
     </form>
     '''
 
+    # 展示 放到数据库里，peewee 增删改 高级views
+    # 仅仅是展示 直接渲染为jinja html 返回链接 uuid
+    # ui bootstrap chat
 
 if __name__ == '__main__':
     app.run()

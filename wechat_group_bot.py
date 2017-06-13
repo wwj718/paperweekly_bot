@@ -322,7 +322,7 @@ else:
     groups = (group1, group2, group3, group4, group5)
     '''
 
-    group_name_list1 = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群','PaperWeekly交流六群','PaperWeekly交流七群','PaperWeekly交流八群']
+    group_name_list1 = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群','PaperWeekly交流六群','PaperWeekly交流七群','PaperWeekly交流八群',"PaperWeekly交流九群"]
     group_name_list2 = ['PaperWeekly CV群','PaperWeekly CV二群']
     groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
     groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
