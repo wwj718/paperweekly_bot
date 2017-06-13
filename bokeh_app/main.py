@@ -1,17 +1,19 @@
 from __future__ import unicode_literals
+print("ok")
 from os.path import dirname, join
 import pandas as pd
 import sqlite3
 import sys
 import datetime
 import pandas
-import arrow # pip install 
+import arrow # pip install
 #from pprint import pprint
 from bokeh.layouts import row, widgetbox
 from bokeh.models import ColumnDataSource, CustomJS,DatePicker
 from bokeh.models.widgets import Slider, Button, DataTable, TableColumn, NumberFormatter, TextInput,RadioButtonGroup
 from bokeh.io import curdoc
-from IPython import embed
+print("go")
+#from IPython import embed
 # https://pythonspot.com/sqlite-database-with-pandas/
 '''
 conn = sqlite3.connect(join(dirname(__file__), '../group_chat_message.db'))
@@ -36,7 +38,7 @@ def update():
     # range
     #embed()
     #df[(df['createdAt']>datetime.date(2017,6,1)) & (df['createdAt']<datetime.date(2017,6,7))]
-    #begin_time = 
+    #begin_time =
     #end_time =
     #今天,昨天,过期一周,过去一个月,过去半年,过去1年 0,1,2,3,4
     arw = arrow.utcnow()
@@ -97,9 +99,10 @@ data_table = DataTable(source=source, columns=columns, width=800)
 
 controls = widgetbox(search_text,button_group,button)  # , button)
 table = widgetbox(data_table)
-
+print("test")
 curdoc().add_root(row(controls, table))
 #curdoc().add_root(HBox(children=[beginning]))
 curdoc().title = "Explore message"
 
 update()
+print("go")

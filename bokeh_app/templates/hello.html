@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <title>hello</title>
+    <script type="text/javascript">
+      function download_csv() {
+        var day_num = document.querySelector('#day_num').value;
+        console.log(day_num);
+        url = "/date/"+day_num;
+        window.open(url);
+      }
+    </script>
+  </head>
+  <body>
+
+    <div class="row">
+      <div class="col-md-3 col-sm-offset-2" style="top:50px">
+        <h1>manage</h1>
+        <form>
+        <div class="form-group">
+          <label for="download">下载数据量(day)</label>
+        <input id="day_num"  class="form-control" type="number" name="quantity" min="1" max="5" value=0 >
+      </div>
+
+        <button id="download" type="button" class="btn btn-success btn-lg" onclick="download_csv()">下载</button>
+        </form>
+        <hr/>
+        <a href="/upload_pdf" class="btn btn-success btn-lg" target="_blank">上传pdf</a>
+      </div>
+    </div>
+  </body>
+</html>
+
