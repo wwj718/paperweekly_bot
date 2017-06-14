@@ -154,8 +154,10 @@ def upload_csv_file():
             return redirect(request.url)
         if file and allowed_file(file.filename,CSV_ALLOWED_EXTENSIONS):
             #filename = secure_filename(file.filename) # uuid
-            now = arrow.utcnow().to('Asia/Shanghai').format('YYYY_MM_DD__HH_mm_ss')
+            #now = arrow.utcnow().to('Asia/Shanghai').format('YYYY_MM_DD__HH_mm_ss')
+            now = arrow.utcnow().to('Asia/Shanghai').format('YYYY_MM_DD')
             #中文问题
+            #filename = "{}__{}".format(now,str(uuid.uuid4())[:6])
             filename = "{}__{}".format(now,str(uuid.uuid4())[:6])
             file.save(os.path.join(CSV_UPLOAD_FOLDER, filename)) # 加上uuid 原本就没问题
 
@@ -222,6 +224,22 @@ def message(csv_filename):
     # 展示 放到数据库里，peewee 增删改 高级views
     # 仅仅是展示 直接渲染为jinja html 返回链接 uuid
     # ui bootstrap chat
+
+@app.route('/list/message')
+def list_message():
+    # 作为参数传递 begin=[0,1,2,3,4]
+    # 传入数字
+    # <input type="number" name="quantity" min="1" max="5">
+    # todo 打开这个目录 CSV_UPLOAD_FOLDER 列出文件
+    files = os.listdir(CSV_UPLOAD_FOLDER)
+    #print files
+    return render_template("list.html",files=files)
+    #return str(content_context)
+
+    # 展示 放到数据库里，peewee 增删改 高级views
+    # 仅仅是展示 直接渲染为jinja html 返回链接 uuid
+    # ui bootstrap chat
+
 
 if __name__ == '__main__':
     #app.debug = True

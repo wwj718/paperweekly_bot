@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>list</title>
+  </head>
+  <body>
+  	<ul>
+  	<h2>PaperWeekly聊天记录列表</h2>
+    {% for file in  files %}
+    	<li>
+    		<a href="/message/{{file}}">{{file}}</a>
+    	</li>
+    {% endfor %}
+	</ul>
+  </body>
+</html>
