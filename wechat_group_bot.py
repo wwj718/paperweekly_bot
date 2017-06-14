@@ -213,6 +213,7 @@ def forward_message(msg, src_group, target_groups):
     # 之后的消息统一转发
     if msg["Type"] == 'Picture':
             # todo：上传到云端
+        #print {"Picture msg":msg}
         msg['Text'](msg['FileName'])  # 下载 其他大文件 异步使用另一个线程
         logger.info("ready to send picture")
 
@@ -221,7 +222,8 @@ def forward_message(msg, src_group, target_groups):
         message2push["content"] = " "
         message2push["group_user_name"] = msg["ActualNickName"]
         message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
-        message2push["user_img"] = "http://manage.paperweekly.site/{}".fotmat(msg['FileName']) #外部url
+        message2push["user_img"] = "http://manage.paperweekly.site/{}".format(msg['FileName']) #外部url
+        print message2push
         db_store.push_message(message2push)
 
         for group in target_groups:
