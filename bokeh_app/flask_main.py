@@ -8,6 +8,8 @@ import sys
 import datetime
 import pandas
 import arrow # pip install
+import csv
+
 try:
     from StringIO import StringIO
 except:
@@ -20,7 +22,7 @@ import os
 from flask import Flask, send_file
 from flask import render_template
 #upload pdf
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for,flash
 from werkzeug.utils import secure_filename
 
 from flask import Flask
@@ -46,8 +48,8 @@ def update(begin=0):
     #df = df[(df['createdAt']>"2017-6-7") & (df['createdAt']<"2017-6-9")]#.tail()
     df = df[(df['createdAt']>begin_date_string)]#.tail()
     df.index=df['createdAt']
-    #df["create_time"]= df.createdAt.apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
-    csv_df = df[['group_name', 'group_user_name',"content","user_img"]]
+    df["createdAt"]= df.createdAt.apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
+    csv_df = df[['content','group_name', 'group_user_name','user_img','createdAt']]
     # 只取几个属性
     '''
     source.data = {
@@ -60,7 +62,7 @@ def update(begin=0):
     }
     '''
     buffer = StringIO()
-    csv_df.to_csv(buffer,encoding='utf-8')
+    csv_df.to_csv(buffer,index=False,sep=str("|"),encoding='utf-8')#,quoting=csv.QUOTE_NONNUMERIC) #content加上双引号
     buffer.seek(0)
     return send_file(buffer,
                  attachment_filename="test.csv",
