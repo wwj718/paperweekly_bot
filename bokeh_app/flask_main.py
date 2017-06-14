@@ -34,8 +34,9 @@ app = Flask(__name__)
 UPLOAD_FOLDER = '/home/ubuntu/www_paperweekly/uploads'
 ALLOWED_EXTENSIONS = set(['pdf'])
 
-#CSV_UPLOAD_FOLDER = '/home/ubuntu/www_paperweekly/upload_csv'
-CSV_UPLOAD_FOLDER = '/tmp/upload_csv'
+##CSV_UPLOAD_FOLDER = '/home/ubuntu/www_paperweekly/upload_csv'
+CSV_UPLOAD_FOLDER = '/home/ubuntu/paperweekly_bot/bokeh_app/upload_csv'
+#CSV_UPLOAD_FOLDER = '/tmp/upload_csv'
 CSV_ALLOWED_EXTENSIONS = set(['csv'])
 
 def update(begin=0):
@@ -87,7 +88,7 @@ def begin_date(page_id):
     begin = page_id#request.args.get('begin',)
     return update(begin) #'Hello World!'
 
-@app.route('/')
+@app.route('/admin2358')
 def hello_world():
     # 作为参数传递 begin=[0,1,2,3,4]
     # 传入数字
