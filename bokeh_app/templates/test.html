@@ -1,0 +1,61 @@
+<html>
+<head>
+    <title></title>
+        <link href="https://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!--flask渲染-->
+
+<div class="row current-chat-area">
+                <div class="col-md-12">
+                    <h2><center>PaperWeekly群聊记录</center></h2>
+                </div>
+                <div class="col-md-12">
+                      <ul class="media-list">
+                        {% for message_group in  content_context%}
+                        {% for message in  message_group%}
+                        {% if  message.user_img %}
+                
+                        <li class="media" style="margin-left:50px;margin-right:50px">
+                            <div class="media-body">
+                                <img height="400px" src="{{message.user_img}}" style="margin-left:100px" />
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="media" style="margin-left:50px;margin-right:50px">
+                            <div class="media-body">
+                                <div class="media">
+                                    <a class="pull-left" href="#">
+                                        <img  class="img-circle"  src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDE0MCAxNDAiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjwhLS0KU291cmNlIFVSTDogaG9sZGVyLmpzLzE0MHgxNDAKQ3JlYXRlZCB3aXRoIEhvbGRlci5qcyAyLjYuMC4KTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCihjKSAyMDEyLTIwMTUgSXZhbiBNYWxvcGluc2t5IC0gaHR0cDovL2ltc2t5LmNvCi0tPjxkZWZzPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+PCFbQ0RBVEFbI2hvbGRlcl8xNWNhNTJmY2EzZSB0ZXh0IHsgZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQgfSBdXT48L3N0eWxlPjwvZGVmcz48ZyBpZD0iaG9sZGVyXzE1Y2E1MmZjYTNlIj48cmVjdCB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI0VFRUVFRSIvPjxnPjx0ZXh0IHg9IjQ0LjA1NDY4NzUiIHk9Ijc0LjUiPjE0MHgxNDA8L3RleHQ+PC9nPjwvZz48L3N2Zz4=" data-holder-rendered="true" style="width: 50px; height: 50px;">
+                                    </a>
+                                    <div class="media-body">
+                                        {{message.content}}
+                                        <br>
+                                       <small class="text-muted">by {{message.group_user_name}}(from {{message.group_name}}) | {{message.createdAt}}</small>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                        <hr  color="#987cb9" size="10">
+                        {% endfor %}
+                    </ul>  
+                </div>
+</div>
+
+
+{#
+<div id="test">
+{% for message_group in  content_context%}
+    <p>{{message_group}}</p>
+</hr>
+{% endfor %}
+</div>
+#}
+
+</body>
+</html>
+

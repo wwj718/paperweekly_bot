@@ -101,3 +101,5 @@ group_chat_message.db
 bokeh_app/uploads/
 *.png
 *.gif
+upload_csv
+uploads
