@@ -159,7 +159,8 @@ def upload_csv_file():
             now = arrow.utcnow().to('Asia/Shanghai').format('YYYY_MM_DD')
             #中文问题
             #filename = "{}__{}".format(now,str(uuid.uuid4())[:6])
-            filename = "{}__{}".format(now,str(uuid.uuid4())[:6])
+            #filename = "{}__{}".format(now,str(uuid.uuid4())[:6])
+            filename = "{}".format(now)
             file.save(os.path.join(CSV_UPLOAD_FOLDER, filename)) # 加上uuid 原本就没问题
 
             #import IPython;IPython.embed()
@@ -219,7 +220,11 @@ def message(csv_filename):
     #content_context = [line for line in content_list_lines]
     # 图片还是文字
     #print content_context
-    return render_template("test.html",content_context=content_context)
+    # now
+    #now = arrow.utcnow().to('Asia/Shanghai').format('YYYY-MM-DD')
+    now = content_context[0][0].createdAt.split(" ")[0]
+
+    return render_template("test.html",content_context=content_context,now=now)
     #return str(content_context)
 
     # 展示 放到数据库里，peewee 增删改 高级views
@@ -227,6 +232,7 @@ def message(csv_filename):
     # ui bootstrap chat
 
 @app.route('/list/message')
+@app.route('/')
 def list_message():
     # 作为参数传递 begin=[0,1,2,3,4]
     # 传入数字

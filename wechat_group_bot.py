@@ -337,9 +337,12 @@ else:
 
     group_name_list1 = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群','PaperWeekly交流六群','PaperWeekly交流七群','PaperWeekly交流八群',"PaperWeekly交流九群"]
     group_name_list2 = ['PaperWeekly CV群','PaperWeekly CV二群']
+    log_group_name = ['PaperWeekly知识图谱'] #,'配合消息记录'] #只记录
     groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
     groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
-    groups_family = (groups1,groups2)
+    log_group = tuple([GroupBot(group_name=group_name) for group_name in log_group_name])
+    #groups_family = (groups1,groups2)
+    groups_family = (groups1,groups2,log_group)
     #topic groups pw
     # 主题群消息定期发往大群
     topic_groups=()
