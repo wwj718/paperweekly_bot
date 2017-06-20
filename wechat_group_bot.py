@@ -234,6 +234,15 @@ def forward_message(msg, src_group, target_groups):
         # todo: 同样作为普通消息存入log
         share_message = "@{}分享\n{} {}".format(
             msg['ActualNickName'], msg["Url"].replace("amp;", ""), msg["Text"])
+
+        message2push = {}
+        message2push["group_name"] = src_group._group_name
+        message2push["content"] = share_message
+        message2push["group_user_name"] = msg["ActualNickName"]
+        message2push["CreateTime"] = timestamp2time(int(msg["CreateTime"]))
+        message2push["user_img"] = ""
+        print message2push
+        db_store.push_message(message2push)
         for group in target_groups:
             itchat.send_msg(share_message, group._group_id)
 
@@ -337,7 +346,8 @@ else:
 
     group_name_list1 = ['PaperWeekly交流群','PaperWeekly交流二群','PaperWeekly交流三群','PaperWeekly交流四群','PaperWeekly交流五群','PaperWeekly交流六群','PaperWeekly交流七群','PaperWeekly交流八群',"PaperWeekly交流九群"]
     group_name_list2 = ['PaperWeekly CV群','PaperWeekly CV二群']
-    log_group_name = ['PaperWeekly知识图谱'] #,'配合消息记录'] #只记录
+    #log_group_name = ['PaperWeekly知识图谱'] #,'配合消息记录'] #只记录
+    log_group_name = ['GAN讨论群'] #,'配合消息记录'] #只记录
     groups1 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list1])
     groups2 = tuple([GroupBot(group_name=group_name) for group_name in group_name_list2])
     log_group = tuple([GroupBot(group_name=group_name) for group_name in log_group_name])
