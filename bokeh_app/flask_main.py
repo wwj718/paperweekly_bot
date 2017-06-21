@@ -39,7 +39,7 @@ CSV_UPLOAD_FOLDER = '/home/ubuntu/paperweekly_bot/bokeh_app/upload_csv'
 #CSV_UPLOAD_FOLDER = '/tmp/upload_csv'
 CSV_ALLOWED_EXTENSIONS = set(['csv'])
 
-def update(begin=0):
+def update(begin=0,group_type="PaperWeekly交流"):
     conn = sqlite3.connect(join(dirname(__file__), '../group_chat_message.db'))
     query = "SELECT * FROM message ORDER BY createdAt"  # 排序 时间
     df = pd.read_sql_query(query, conn)
@@ -55,6 +55,8 @@ def update(begin=0):
     print(begin_date_string)
     #df = df[(df['createdAt']>"2017-6-7") & (df['createdAt']<"2017-6-9")]#.tail()
     df = df[(df['createdAt']>begin_date_string)]#.tail()
+    # todo 过滤出下载类型 cv pw chat8 包含
+    df = df[df['group_name'].str.contains(group_type)]
     df.index=df['createdAt']
     df["createdAt"]= df.createdAt.apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
     csv_df = df[['content','group_name', 'group_user_name','user_img','createdAt']]
@@ -80,13 +82,18 @@ def update(begin=0):
 #button_group = RadioButtonGroup(labels=["1day(today)", "1week", "1month","0.5year","1year"], active=0)
 #@app.route('/')
 
-@app.route('/date/<int:page_id>')
-def begin_date(page_id):
+@app.route('/date/<int:page_id>/<group_type>')
+def begin_date(page_id,group_type):
+    '''
+    group_type
+        pw cv night
+    '''
+    group_type_map = {"pw":"PaperWeekly交流","cv":"CV","night":"讨论群"} #命名规则
     # 作为参数传递 begin=[0,1,2,3,4]
     # 传入数字
     # <input type="number" name="quantity" min="1" max="5">
     begin = page_id#request.args.get('begin',)
-    return update(begin) #'Hello World!'
+    return update(begin,group_type_map.get(group_type)) #'Hello World!'
 
 @app.route('/admin2358')
 def hello_world():

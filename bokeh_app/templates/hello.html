@@ -8,9 +8,11 @@
     <script type="text/javascript">
       function download_csv() {
         var day_num = document.querySelector('#day_num').value;
-        console.log(day_num);
-        url = "/date/"+day_num;
+        var group_type = document.querySelector('#group_type').value;
+        console.log(day_num,group_type);
+        url = "/date/"+day_num+"/"+group_type;
         window.open(url);
+        //加上 另一个参数
       }
     </script>
   </head>
@@ -25,8 +27,14 @@
         <input id="day_num"  class="form-control" type="number" name="quantity" min="1" max="5" value=0 >
       </div>
 
-        <button id="download" type="button" class="btn btn-success btn-lg" onclick="download_csv()">下载</button>
+        <!--<button id="download" type="button" class="btn btn-success btn-lg" onclick="download_csv()">下载</button>--> <!--下拉-->
+        <select id="group_type" class="form-control">
+          <option value ="pw">PaperWeekly 交流群</option>
+          <option value ="cv">PaperWeekly CV群</option>
+          <option value ="night">晚8点讨论群</option>
+        </select>
         </form>
+        <button id="download" type="button" class="btn btn-success btn-lg" onclick="download_csv()" style="margin-top:20px">下载</button>
         <hr/>
         <a href="/upload_csv" class="btn btn-success btn-lg" target="_blank">上传聊天记录</a>
         <hr/>
